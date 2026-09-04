@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+	name: posts
+spec:
+	replicas: 1
+	selector:
+		matchLabels:
+			app: posts
+	template:
+		metadata:
+			labels:
+				app: posts
+		spec:
+			containers:
+				- name: posts
+					image: posts
+					imagePullPolicy: IfNotPresent
+					env:
+						- name: EVENT_BUS_URL
+							value: http://event-bus:4005
+					ports:
+						- containerPort: 4000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+	name: comments
+spec:
+	replicas: 1
+	selector:
+		matchLabels:
+			app: comments
+	template:
+		metadata:
+			labels:
+				app: comments
+		spec:
+			containers:
+				- name: comments
+					image: comments
+					imagePullPolicy: IfNotPresent
+					env:
+						- name: EVENT_BUS_URL
+							value: http://event-bus:4005
+					ports:
+						- containerPort: 4001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+	name: query
+spec:
+	replicas: 1
+	selector:
+		matchLabels:
+			app: query
+	template:
+		metadata:
+			labels:
+				app: query
+		spec:
+			containers:
+				- name: query
+					image: query
+					imagePullPolicy: IfNotPresent
+					env:
+						- name: EVENT_BUS_URL
+							value: http://event-bus:4005
+					ports:
+						- containerPort: 4002
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+	name: moderation
+spec:
+	replicas: 1
+	selector:
+		matchLabels:
+			app: moderation
+	template:
+		metadata:
+			labels:
+				app: moderation
+		spec:
+			containers:
+				- name: moderation
+					image: moderation
+					imagePullPolicy: IfNotPresent
+					env:
+						- name: EVENT_BUS_URL
+							value: http://event-bus:4005
+					ports:
+						- containerPort: 4003
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+	name: event-bus
+spec:
+	replicas: 1
+	selector:
+		matchLabels:
+			app: event-bus
+	template:
+		metadata:
+			labels:
+				app: event-bus
+		spec:
+			containers:
+				- name: event-bus
+					image: event-bus
+					imagePullPolicy: IfNotPresent
+					ports:
+						- containerPort: 4005

@@ -2,6 +2,7 @@ const express = require("express");
 const axios = require("axios");
 
 const app = express();
+const eventBusUrl = process.env.EVENT_BUS_URL || "http://localhost:4005";
 
 app.use(express.json());
 
@@ -16,7 +17,7 @@ app.post("/events", async (req, res) => {
       status = "rejected";
     }
     await axios
-      .post("http://localhost:4005/events", {
+      .post(`${eventBusUrl}/events`, {
         type: "CommentModerated",
         data: { ...data, status },
       })

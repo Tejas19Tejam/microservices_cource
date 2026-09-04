@@ -3,6 +3,7 @@ const cors = require("cors");
 const { randomBytes } = require("crypto");
 const axios = require("axios");
 const app = express();
+const eventBusUrl = process.env.EVENT_BUS_URL || "http://localhost:4005";
 
 app.use(express.json());
 app.use(cors());
@@ -21,7 +22,7 @@ app.post("/posts", async (req, res) => {
 
   // Trigger event
   // consistent structure for event
-  await axios.post("http://localhost:4005/events", {
+  await axios.post(`${eventBusUrl}/events`, {
     type: "PostCreated",
     data: posts[id],
   });

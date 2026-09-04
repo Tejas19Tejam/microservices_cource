@@ -3,6 +3,7 @@ const cors = require("cors");
 const { randomBytes } = require("crypto");
 const axios = require("axios");
 const app = express();
+const eventBusUrl = process.env.EVENT_BUS_URL || "http://localhost:4005";
 
 app.use(express.json());
 app.use(cors());
@@ -22,7 +23,7 @@ app.post("/posts/:id/comments", async (req, res) => {
   comments.push({ id, content, status: "pending" });
   commentsByPostId[postId] = comments;
 
-  await axios.post("http://localhost:4005/events", {
+  await axios.post(`${eventBusUrl}/events`, {
     type: "CommentCreated",
     data: {
       id,
@@ -39,11 +40,12 @@ app.post("/events", async (req, res) => {
 
   if (type === "CommentModerated") {
     console.log("CommentModerated event occur", req.body);
-    const post = commentsByPostId[data.postId];
-    const comment = post.comments.find((cmt) => cmt.id === data.id);
+    const comments = commentsByPostId[data.postId];
+    
+    const comment = comments.find((cmt) => cmt.id === data.id);
     comment.status = data.status;
 
-    await axios.post("http://localhost:4005/events", {
+    await axios.post(`${eventBusUrl}/events`, {
       type: "CommentUpdated",
       data: data,
     });
