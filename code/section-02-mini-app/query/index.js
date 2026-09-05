@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 const app = express();
-const eventBusUrl = process.env.EVENT_BUS_URL || "http://localhost:4005";
+const eventBusUrl = "http://event-bus:4005";
 
 app.use(express.json());
 app.use(cors());
@@ -57,8 +57,18 @@ app.listen(4002, async () => {
 
   console.log(`[Info] Query service is requesting all events from the event bus to synchronize its state...`);
 
-  const { data } = await axios.get(`${eventBusUrl}/events`);
-  data.forEach((event) => {
-    handleEvent(event.type, event.data);
-  });
+  try{
+
+    if (!eventBusUrl) {
+      console.error("[Error] EVENT_BUS_URL is not defined. Cannot synchronize events.");
+      throw new Error("EVENT_BUS_URL is not defined. Cannot synchronize events.");
+    }
+    
+    const { data } = await axios.get(`${eventBusUrl}/events`);
+    data.forEach((event) => {
+      handleEvent(event.type, event.data);
+    });
+  }catch (error) {
+    console.error(`[Error] Failed to synchronize events from the event bus: ${error.message}`);
+  }
 });

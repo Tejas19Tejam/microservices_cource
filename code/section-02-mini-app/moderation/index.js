@@ -2,7 +2,7 @@ const express = require("express");
 const axios = require("axios");
 
 const app = express();
-const eventBusUrl = process.env.EVENT_BUS_URL || "http://localhost:4005";
+const eventBusUrl = "http://event-bus:4005";
 
 app.use(express.json());
 
